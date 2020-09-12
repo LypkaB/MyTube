@@ -443,9 +443,12 @@ main {
         display: none;
     }
 
-    .keyboard-wrapper,
-    .keyboard-wrapper:focus {
+    &-wrapper:focus {
         outline-color: transparent;
+    }
+
+    button {
+        cursor: pointer;
     }
 }
 

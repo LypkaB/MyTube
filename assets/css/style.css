@@ -554,9 +554,12 @@ main .yt-channel {
   }
 }
 
-.keyboard .keyboard-wrapper,
-.keyboard .keyboard-wrapper:focus {
+.keyboard-wrapper:focus {
   outline-color: transparent;
+}
+
+.keyboard button {
+  cursor: pointer;
 }
 
 table {
