@@ -26,4 +26,31 @@ document.addEventListener('DOMContentLoaded', () => {
     keyboardBtn.addEventListener('click', toggleKeyboard);
     closeKeyboard.addEventListener('click', toggleKeyboard);
     keyboard.addEventListener('click', typing);
+
+    /*<!----- Burger menu ----->*/
+    const burgerMenu = document.querySelector('.spinner'),
+          sidebarMenu = document.querySelector('.sidebarMenu');
+
+    burgerMenu.addEventListener('click', () => {
+        burgerMenu.classList.toggle('active');
+        sidebarMenu.classList.toggle('rollUp');
+    });
+
+    sidebarMenu.addEventListener('click', (e) => {
+        let target = e.target;
+
+        target = target.closest('a[href="#"');
+
+        if (target) {
+            const parentTarget = target.parentElement;
+
+            sidebarMenu.querySelectorAll('li').forEach(elem => {
+                if (elem === parentTarget) {
+                    elem.classList.add('active');
+                } else {
+                    elem.classList.remove('active');
+                }
+            })
+        }
+    })
 });
