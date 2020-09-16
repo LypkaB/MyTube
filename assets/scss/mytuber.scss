@@ -10,13 +10,17 @@
     left: 0;
     z-index: 1100;
 
-    #mytuber {
+    #myTuber {
         text-align: center;
         box-shadow: 0 0 40px #333;
 
         &Container {
             z-index: 1102;
             position: fixed;
+
+            iframe {
+                border: none;
+            }
         }
 
         &Loading {

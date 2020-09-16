@@ -11,18 +11,22 @@
   z-index: 1100;
 }
 
-.myTuberModal #mytuber {
+.myTuberModal #myTuber {
   text-align: center;
   -webkit-box-shadow: 0 0 40px #333;
   box-shadow: 0 0 40px #333;
 }
 
-.myTuberModal #mytuberContainer {
+.myTuberModal #myTuberContainer {
   z-index: 1102;
   position: fixed;
 }
 
-.myTuberModal #mytuberLoading {
+.myTuberModal #myTuberContainer iframe {
+  border: none;
+}
+
+.myTuberModal #myTuberLoading {
   width: 5%;
   position: fixed;
   top: 49%;
@@ -32,7 +36,7 @@
   z-index: 1101;
 }
 
-.myTuberModal #mytuberClose {
+.myTuberModal #myTuberClose {
   position: fixed;
   right: 15px;
   top: 15px;
@@ -47,6 +51,6 @@
   z-index: 1101;
 }
 
-.myTuberModal #mytuberClose:hover {
+.myTuberModal #myTuberClose:hover {
   background: #333;
 }

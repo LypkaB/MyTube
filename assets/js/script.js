@@ -52,5 +52,63 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             })
         }
+    });
+
+    /*<!----- Modal window ----->*/
+    document.body.insertAdjacentHTML('beforeend', `
+        <div class="myTuberModal">
+            <div id="myTuberClose">&#215;</div>
+            <div id="myTuberContainer"></div>
+        </div>
+    `);
+
+    const myTuberItems = document.querySelectorAll('[data-mytuber]'),
+          myTuberModal = document.querySelector('.myTuberModal'),
+          myTuberContainer = document.getElementById('myTuberContainer'),
+          qw = [3840, 2560, 1920, 1280, 854, 640, 426, 256],
+          qh = [2160, 1440, 1080, 720, 480, 360, 240, 144];
+
+    const sizeVideo = () => {
+        let ww = document.documentElement.clientWidth,
+            wh = document.documentElement.clientHeight;
+
+        for (let i = 0; i < qw.length; i++) {
+            if (ww > qw[i]) {
+                myTuberContainer.querySelector('iframe').style.cssText = `
+                    width: ${qw[i]}px;
+                    height: ${qh[i]}px;
+                `;
+
+                myTuberContainer.style.cssText = `
+                    width: ${qw[i]}px;
+                    height: ${qh[i]}px;
+                    top: ${(wh - qh[i]) / 2}px;
+                    left: ${(ww - qw[i]) / 2}px;
+                `;
+                break;
+            }
+        }
+    };
+
+    myTuberItems.forEach(elem => {
+        elem.addEventListener('click', () => {
+            const idVideo = elem.dataset.mytuber;
+
+            myTuberModal.style.display = 'block';
+
+            const myTuberFrame = document.createElement('iframe');
+
+            myTuberFrame.src = `https://youtube.com/embed/${idVideo}`;
+            myTuberContainer.insertAdjacentElement('beforeend', myTuberFrame);
+
+            window.addEventListener('resize', sizeVideo);
+            sizeVideo();
+        })
+    });
+
+    myTuberModal.addEventListener('click', () => {
+        myTuberModal.style.display = '';
+        myTuberContainer.textContent = '';
+        window.removeEventListener('resize', sizeVideo);
     })
 });
