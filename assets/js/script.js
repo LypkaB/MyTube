@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const authBlock = document.querySelector('.auth_wrap'),
               authBtn = document.getElementById('authorize');
 
-        gapi.load("client:auth2", () => gapi.auth2.init({client_id: CLIENT_ID}));
+        gapi.load('client:auth2', () => gapi.auth2.init({client_id: CLIENT_ID}));
 
         const authenticate = () => gapi.auth2.getAuthInstance()
                 .signIn({scope: "https://www.googleapis.com/auth/youtube/readonly"})
@@ -136,12 +136,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return gapi.client.load("https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest")
                 .then(() => console.log('GAPI client loaded for API'))
                 .then(() => authBlock.style.display = 'none')
-                .catch(errorAuth)
+                .catch(errorAuth);
         };
 
         const errorAuth = err => {
             console.error(err);
-            authBlock.style.display = ''
+            authBlock.style.display = '';
         };
 
         authBtn.addEventListener('click', () => {
@@ -150,39 +150,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // request
         {
-            const myTube = document.querySelector('.yt-thumbnail__img');
+            const myTube = document.querySelector('.logo'),
+                  trends = document.getElementById('yt_trend');
 
-            const request = options => gapi.client.youtube.search.list(options)
-                .then(response => response.result.items)
-                .then(render)
-                .then(myTuber)
-                .catch(err => console.error('Error' + err));
+            const request = options => gapi.client.youtube[options.method]
+                  .list(options)
+                  .then(response => response.result.items)
+                  .then(render)
+                  .then(myTuber)
+                  .catch(err => console.error('Error' + err));
 
             const render = data => {
                 const mtWrapper = document.getElementById('yt-wrapper');
 
                 mtWrapper.textContent = '';
                 data.forEach(item => {
-                    const {id:{videoId}, snippet:{channelTitle, title, thumbnails:{high:{url}}}} = item;
+                    try {
+                        const {id, id:{videoId}, snippet:{channelTitle, title, thumbnails:{high:{url}}}} = item;
 
-                    mtWrapper.innerHTML +=
-                    `<div class="yt" data-mytuber="${videoId}">
-                        <div class="yt-thumbnail" style="--aspect-ratio:16/9;">
-                            <img src="${url}" alt="thumbnail" class="yt-thumbnail__img">
-                        </div>
-                        <div class="yt-title">${title}</div>
-                        <div class="yt-channel">${channelTitle}</div>
-                    </div>`
+                        mtWrapper.innerHTML +=
+                            `<div class="yt" data-mytuber="${videoId || id}">
+                                <div class="yt-thumbnail" style="--aspect-ratio:16/9;">
+                                    <img src="${url}" alt="thumbnail" class="yt-thumbnail__img">
+                                </div>
+                                <div class="yt-title">${title}</div>
+                                <div class="yt-channel">${channelTitle}</div>
+                            </div>`;
+                    } catch (err) {
+                        console.error(err);
+                    }
                 })
             };
 
             myTube.addEventListener('click', () => {
                 request({
+                    method: 'search',
                     part: 'snippet',
                     channelId: 'UCVswRUcKC-M35RzgPRv8qUg',
                     order: 'date',
                     maxResults: 6
-                })
+                });
+            });
+
+            trends.addEventListener('click', () => {
+                request({
+                    method: 'videos',
+                    part: 'snippet',
+                    chart: 'mostPopular',
+                    maxResults: 6
+                });
             })
         }
     }*/
