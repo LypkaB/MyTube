@@ -151,7 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // request
         {
             const myTube = document.querySelector('.logo'),
-                  trends = document.getElementById('yt_trend');
+                  trends = document.getElementById('yt_trend'),
+                  like = document.getElementById('like');
 
             const request = options => gapi.client.youtube[options.method]
                   .list(options)
@@ -166,10 +167,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 mtWrapper.textContent = '';
                 data.forEach(item => {
                     try {
-                        const {id, id:{videoId}, snippet:{channelTitle, title, thumbnails:{high:{url}}}} = item;
+                        const {id,
+                            id: {videoId},
+                            snippet: {
+                                channelTitle,
+                                title,
+                                resourceId: {videoId: likedVideoId} = {},
+                                thumbnails: {
+                                    high: {url}
+                                }
+                            }
+                        } = item;
 
                         mtWrapper.innerHTML +=
-                            `<div class="yt" data-mytuber="${videoId || id}">
+                            `<div class="yt" data-mytuber="${likedVideoId || videoId || id}">
                                 <div class="yt-thumbnail" style="--aspect-ratio:16/9;">
                                     <img src="${url}" alt="thumbnail" class="yt-thumbnail__img">
                                 </div>
@@ -197,6 +208,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     method: 'videos',
                     part: 'snippet',
                     chart: 'mostPopular',
+                    maxResults: 6
+                });
+            });
+
+            like.addEventListener('click', () => {
+                request({
+                    method: 'playlistItems',
+                    part: 'snippet',
+                    playlistId: 'LL', // need own «Liked videos» ID
                     maxResults: 6
                 });
             })
