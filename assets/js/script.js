@@ -152,14 +152,61 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             const myTube = document.querySelector('.logo'),
                   trends = document.getElementById('yt_trend'),
-                  like = document.getElementById('like');
+                  like = document.getElementById('like'),
+                  subscriptions = document.getElementById('subscriptions');
 
             const request = options => gapi.client.youtube[options.method]
                   .list(options)
                   .then(response => response.result.items)
-                  .then(render)
-                  .then(myTuber)
+                  .then(data => options.method === 'subscriptions' ? renderSub(data) : render(data))
                   .catch(err => console.error('Error' + err));
+
+            const renderSub = data => {
+                const mtWrapper = document.getElementById('yt-wrapper');
+
+                mtWrapper.textContent = '';
+                data.forEach(item => {
+                    try {
+                        const {
+                            snippet: {
+                                resourceId: {
+                                    channelId
+                                },
+                                description,
+                                title,
+                                thumbnails: {
+                                    high: {
+                                        url
+                                    }
+                                }
+                            }
+                        } = item;
+
+                        mtWrapper.innerHTML +=
+                            `<div class="yt" data-mytuber="${channelId}">
+                                  <div class="yt-thumbnail" style="--aspect-ratio:16/9;">
+                                       <img src="${url}" alt="thumbnail" class="yt-thumbnail__img">
+                                  </div>
+                                  <div class="yt-title">${title}</div>
+                                  <div class="yt-channel">${description}</div>
+                            </div>`;
+                    } catch (err) {
+                        console.error(err);
+                    }
+                });
+
+                mtWrapper.querySelectorAll('.yt').forEach(item => {
+                    item.addEventListener('click', () => {
+                        request({
+                            method: 'search',
+                            part: 'snippet',
+                            channelId: item.dataset.youtuber,
+                            order: 'date',
+                            maxResults: 6
+                        });
+                    })
+                });
+            };
 
             const render = data => {
                 const mtWrapper = document.getElementById('yt-wrapper');
@@ -181,16 +228,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         mtWrapper.innerHTML +=
                             `<div class="yt" data-mytuber="${likedVideoId || videoId || id}">
-                                <div class="yt-thumbnail" style="--aspect-ratio:16/9;">
-                                    <img src="${url}" alt="thumbnail" class="yt-thumbnail__img">
-                                </div>
-                                <div class="yt-title">${title}</div>
-                                <div class="yt-channel">${channelTitle}</div>
+                                  <div class="yt-thumbnail" style="--aspect-ratio:16/9;">
+                                       <img src="${url}" alt="thumbnail" class="yt-thumbnail__img">
+                                  </div>
+                                  <div class="yt-title">${title}</div>
+                                  <div class="yt-channel">${channelTitle}</div>
                             </div>`;
                     } catch (err) {
                         console.error(err);
                     }
-                })
+                });
+
+                myTuber();
             };
 
             myTube.addEventListener('click', () => {
@@ -217,6 +266,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     method: 'playlistItems',
                     part: 'snippet',
                     playlistId: 'LL', // need own «Liked videos» ID
+                    maxResults: 6
+                });
+            })
+
+            subscriptions.addEventListener('click', () => {
+                request({
+                    method: 'subscriptions',
+                    part: 'snippet',
+                    mine: true,
                     maxResults: 6
                 });
             })
