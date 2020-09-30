@@ -153,7 +153,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const myTube = document.querySelector('.logo'),
                   trends = document.getElementById('yt_trend'),
                   like = document.getElementById('like'),
-                  subscriptions = document.getElementById('subscriptions');
+                  subscriptions = document.getElementById('subscriptions'),
+                  searchForm = document.querySelector('.search-form');
 
             const request = options => gapi.client.youtube[options.method]
                   .list(options)
@@ -268,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     playlistId: 'LL', // need own «Liked videos» ID
                     maxResults: 6
                 });
-            })
+            });
 
             subscriptions.addEventListener('click', () => {
                 request({
@@ -277,7 +278,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     mine: true,
                     maxResults: 6
                 });
-            })
+            });
+
+            searchForm.addEventListener('submit', event => {
+                event.preventDefault();
+
+                const valueInput = searchForm.elements[0].value;
+
+                if (!valueInput) {
+                    searchForm.style.border = '1px solid red';
+                    return;
+                }
+                searchForm.style.border = '';
+
+                request({
+                    method: 'subscriptions',
+                    part: 'snippet',
+                    order: 'relevance',
+                    q: valueInput
+                });
+
+                searchForm.elements[0].value = '';
+            });
         }
     }*/
 });
